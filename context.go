@@ -47,28 +47,21 @@ func (ctx *Context) SetUpAsExternal() error {
 	if ctx.ServiceName == "" {
 		return errors.New("missing environment variable SERVICE_NAME")
 	}
-	if env := os.Getenv("ENVIRONMENT"); env == "" {
-		return errors.New("missing environment variable ENVIRONMENT")
-	} else if env == "DEV" {
-		ctx.AppEnvironment = Dev
-		ctx.ServiceProtocol = "http"
-		log.Println("Dev environnement detected")
-	} else if env == "TEST" {
-		ctx.AppEnvironment = Test
-		ctx.ServiceProtocol = "http"
-		log.Println("Test environnement detected")
-	} else if env == "PROD" {
-		ctx.AppEnvironment = Prod
-		ctx.ServiceProtocol = "https"
-		log.Println("Prod environement detected")
-	} else {
-		return errors.New("unknown value " + env + " for ENVIRONMENT variable. Valid values are DEV, TEST and PROD.")
+	if err := configEnv(ctx); err != nil {
+		return err
 	}
 	ctx.ServiceUrl = ctx.ServiceProtocol + "://" + ctx.ServiceSubDomain + "." + ctx.AppDomain + ":" + ctx.ServicePort
 	return nil
 }
 
 func (ctx *Context) SetUpAsInternal() error {
+	if ctx.AppName == "" {
+		return errors.New("missing environment variable APP_NAME")
+	}
+	return configEnv(ctx)
+}
+
+func configEnv(ctx *Context) error {
 	if env := os.Getenv("ENVIRONMENT"); env == "" {
 		return errors.New("missing environment variable ENVIRONMENT")
 	} else if env == "DEV" {
@@ -83,8 +76,6 @@ func (ctx *Context) SetUpAsInternal() error {
 		ctx.AppEnvironment = Prod
 		ctx.ServiceProtocol = "https"
 		log.Println("Prod environement detected")
-	} else {
 		return errors.New("unknown value " + env + " for ENVIRONMENT variable")
 	}
-	return nil
 }
