@@ -55,10 +55,17 @@ func (ctx *Context) SetUpAsExternal() error {
 }
 
 func (ctx *Context) SetUpAsInternal() error {
-	if ctx.AppName == "" {
-		return errors.New("missing environment variable APP_NAME")
+	if ctx.ServiceName == "" {
+		return errors.New("missing environment variable SERVICE_NAME")
 	}
-	return configEnv(ctx)
+	if ctx.ServicePort == "" {
+		return errors.New("missing environment variable SERVICE_PORT")
+	}
+	if err := configEnv(ctx); err != nil {
+		return err
+	}
+	ctx.ServiceUrl = ctx.ServiceProtocol + "://" + ctx.ServiceName + ":" + ctx.ServicePort
+	return nil
 }
 
 func configEnv(ctx *Context) error {
@@ -78,4 +85,5 @@ func configEnv(ctx *Context) error {
 		log.Println("Prod environement detected")
 		return errors.New("unknown value " + env + " for ENVIRONMENT variable")
 	}
+	return nil
 }
