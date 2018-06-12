@@ -37,7 +37,7 @@ func BuildErrorDescriptionFromApiError(apiErrors ApiErrors, code int) (*ErrorDes
 }
 
 // HttpRequestHandler is a handler for easy http requests
-func HttpRequestHandler(requestHeader RequestHeader, requestBody interface{}, responseDTO interface{}) (*http.Response, *ErrorDescription) {
+func HttpRequestHandler(requestHeader RequestHeader, requestBody interface{}, responseDTO interface{}) *ErrorDescription {
 	req, err := http.NewRequest(requestHeader.Method, requestHeader.URL, encodeRequestBody(requestBody))
 	req.Header.Set("Content-Type", requestHeader.ContentType)
 	req.Header.Set("Authorization", requestHeader.Authorization)
@@ -47,6 +47,7 @@ func HttpRequestHandler(requestHeader RequestHeader, requestBody interface{}, re
 	if err != nil {
 		panic(err)
 	}
+	defer resp.Body.Close()
 
 	// read response
 	body, _ := ioutil.ReadAll(resp.Body)
@@ -55,7 +56,7 @@ func HttpRequestHandler(requestHeader RequestHeader, requestBody interface{}, re
 	json.Unmarshal(body, &responseDTO)
 	json.Unmarshal(body, &apiErrors)
 
-	return resp, BuildErrorDescriptionFromApiError(apiErrors, resp.StatusCode)
+	return BuildErrorDescriptionFromApiError(apiErrors, resp.StatusCode)
 }
 
 func encodeRequestBody(reqBody interface{}) io.Reader {
