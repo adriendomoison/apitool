@@ -32,8 +32,16 @@ func BuildErrorDescriptionFromApiError(apiErrors ApiErrors, code int) (*ErrorDes
 			Code:    Code(code),
 		}
 	}
+	if code == 500 {
+		return &ErrorDescription{
+			Detail: errors.New("the service is currently unavailable"),
+			Message: "Something wrong happened on our end. Please try again later.",
+			Code:   Code(code),
+		}
+	}
 	return &ErrorDescription{
-		Detail: errors.New("unknown error"),
+		Detail: errors.New("unknown error, the error was not explained by the service"),
+		Message: "Something wrong happened on our end. Please try again later.",
 		Code:   Code(code),
 	}
 }
