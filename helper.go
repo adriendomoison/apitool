@@ -104,6 +104,9 @@ func BuildRequestError(err error) (int, ApiErrors) {
 // BuildResponseError apply the right status to the http response and build the error JSON object
 func BuildResponseError(err *ErrorDescription) (status int, apiErrors ApiErrors) {
 	if err.Code >= 400 {
+		if err.Detail == nil {
+			err.Detail = errors.New(err.Message)
+		}
 		apiErrors.Errors = append(apiErrors.Errors, Error{
 			Detail:  err.Detail.Error(),
 			Message: err.Message,
