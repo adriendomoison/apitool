@@ -20,8 +20,12 @@ type RequestHeader struct {
 
 // BuildErrorDescriptionFromApiError rebuild an ErrorDescription object out of an ApiError object
 func BuildErrorDescriptionFromApiError(apiErrors ApiErrors, code int) (*ErrorDescription) {
-	if code < 400 {
+	if code == 200 || code == 201 {
 		return nil
+	} else if code == 204 {
+		return &ErrorDescription{
+			Code:    Code(code),
+		}
 	} else if len(apiErrors.Errors) > 0 {
 		var err Error
 		mapstructure.Decode(apiErrors.Errors[0], &err)
