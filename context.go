@@ -83,6 +83,7 @@ func configEnv(ctx *Context) error {
 		ctx.AppEnvironment = Prod
 		ctx.ServiceProtocol = "https"
 		log.Println("Prod environement detected")
+	} else {
 		return errors.New("unknown value " + env + " for ENVIRONMENT variable")
 	}
 	return nil
