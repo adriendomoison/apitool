@@ -10,7 +10,7 @@ import (
 func ConnectToDB(username string, dbName string, password string, host string) (DB *gorm.DB, err error) {
 	log.Println("CONNECTING TO [" + dbName + "] DB...")
 	for i := 0; i < 5; i++ {
-		DB, err = gorm.Open("postgres", "host="+host+" user="+username+" dbname="+dbName+" sslmode=disable parseTime=true password="+password)
+		DB, err = gorm.Open("postgres", "host="+host+" user="+username+" dbname="+dbName+" sslmode=disable password="+password)
 		if err != nil {
 			log.Println("Still trying...")
 		} else {
